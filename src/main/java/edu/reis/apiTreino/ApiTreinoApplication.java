@@ -1,12 +1,17 @@
 package edu.reis.apiTreino;
 
-import edu.reis.apiTreino.model.Episodio;
+import edu.reis.apiTreino.model.EpisodioEspecifico;
 import edu.reis.apiTreino.model.Serie;
+import edu.reis.apiTreino.model.TodosEpesodioSerie;
+import edu.reis.apiTreino.principal.Principal;
 import edu.reis.apiTreino.service.ConsumoAPI;
 import edu.reis.apiTreino.service.ConverteJsonClasse;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootApplication
 public class ApiTreinoApplication implements CommandLineRunner {
@@ -18,21 +23,32 @@ public class ApiTreinoApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        ConsumoAPI consumo = new ConsumoAPI();
 
-        String linkApi = "https://www.omdbapi.com/?t=lost&apikey=b53950be";
-        String json = consumo.obterConsumo(linkApi);
+        Principal principal = new Principal();
+        principal.buscarSerie();
 
-        ConverteJsonClasse converte = new ConverteJsonClasse();
-
-        Serie dadoSerie = converte.converteTipos(json, Serie.class);
-        System.out.println(dadoSerie);
-
-        linkApi = "https://www.omdbapi.com/?type=series&t=lost&season=2&episode=2&apikey=b53950be";
-        json = consumo.obterConsumo(linkApi);
-
-        Episodio dadoEpisodio = converte.converteTipos(json, Episodio.class);
-        System.out.println(dadoEpisodio);
+//        //pesquisa uma série, info básicas
+//
+//        ConverteJsonClasse converte = new ConverteJsonClasse();
+//
+//        Serie dadoSerie = converte.converteTipos(json, Serie.class);
+//        System.out.println(dadoSerie);
+//
+//        //pesquisa por um episódio específico
+//
+//
+//        EpisodioEspecifico dadoEpisodioEspecifico = converte.converteTipos(json, EpisodioEspecifico.class);
+//        System.out.println(dadoEpisodioEspecifico);
+//
+//        List<TodosEpesodioSerie> episodios = new ArrayList<>();
+//
+//        for (int i = 1; i <= Integer.parseInt(dadoSerie.temporadas()); i++) {
+//
+//            TodosEpesodioSerie todosEpesodioSerie = converte.converteTipos(json, TodosEpesodioSerie.class);
+//            episodios.add(todosEpesodioSerie);
+//        }
+//
+//        episodios.forEach(System.out::println);
 
     }
 }
