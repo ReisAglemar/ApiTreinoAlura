@@ -21,14 +21,11 @@ public class ConsumoAPI {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
             String json = response.body();
             return json;
-        }
-        catch (IOException | InterruptedException | NullPointerException e) {
+        } catch (IOException | InterruptedException | NullPointerException e) {
             System.out.println("Algo de errado não está certo: " + e.getMessage());
-        }
-        catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             System.out.println("Usuário...: " + e.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Volta, Deu Cagada!!!: " + e.getMessage());
         }
         return "Erro ao obter consumo";
