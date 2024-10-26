@@ -6,6 +6,7 @@ public record EpisodiosTemporadaEspecifica(@SerializedName("Title") String titul
                                            @SerializedName("Episode") String episodio,
                                            @SerializedName("imdbRating") String nota) {
 
+
     @Override
     public String toString() {
         return """

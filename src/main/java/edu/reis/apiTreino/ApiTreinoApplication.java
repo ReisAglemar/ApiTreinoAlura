@@ -23,10 +23,9 @@ public class ApiTreinoApplication implements CommandLineRunner {
     public void run(String... args) {
 
         Principal principal = new Principal();
-        principal.insiraTitulo();
-        principal.buscarSerie();
-        principal.buscarTodosEpisodio();
-        principal.buscarEpisodioTemporadaEspecifica(5);
+       // principal.insiraTitulo();
+//        principal.buscarEpisodioTemporadaEspecifica(5);
+        principal.treinoStream();
     }
 }
 
