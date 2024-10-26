@@ -1,15 +1,13 @@
 package edu.reis.apiTreino.principal;
 
+import edu.reis.apiTreino.model.EpisodiosTemporadaEspecifica;
 import edu.reis.apiTreino.model.Serie;
 import edu.reis.apiTreino.model.TodosEpisodioSerie;
 import edu.reis.apiTreino.service.ConsumoAPI;
 import edu.reis.apiTreino.service.ConverteJsonClasse;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-import java.util.stream.IntStream;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Principal {
 
@@ -23,7 +21,7 @@ public class Principal {
     private String titulo;
     private String linkApi;
     private String json;
-    private List<TodosEpisodioSerie> episodios = new ArrayList<>();
+    private List<TodosEpisodioSerie> temporadas = new ArrayList<>();
 
     public void insiraTitulo() {
         System.out.print("\n\nDigite um titulo para pesquisar: ");
@@ -48,15 +46,44 @@ public class Principal {
             this.linkApi = DOMINIO + titulo.replace(" ", "+") + SEASON + i + API_KEY;
             this.json = consumo.obterConsumo(linkApi);
             TodosEpisodioSerie todosEpisodioSerie = conversor.converteTipos(json, TodosEpisodioSerie.class);
-            this.episodios.add(todosEpisodioSerie);
+            this.temporadas.add(todosEpisodioSerie);
         }
 
         System.out.println("======== Resultado Para Todos os Episódios de Todas as Temporadas ========\n");
+        temporadas.forEach(System.out::println);
+        dezMelhoresEpisodios();
+    }
 
-        episodios.stream()
+
+    private void dezMelhoresEpisodios() {
+
+        System.out.println("======== Resultado Para os Dez Melhores Episodios ========\n");
+
+        /*
+         * Temporada é lista das temporadas que conte os seus episódios
+         * cada episódio tem uma gama de informações, sendo assim é uma lista dentro de temporada.
+         *
+         * Temporada lista que contem uma lista de episódios.
+         * Lista dentro de lista.
+         *
+         * Para operar sobre o episódio em específico recomenda-se separar em outra lista de apenas
+         * episódio
+         * */
+
+        // extrair a lista interna
+        List<EpisodiosTemporadaEspecifica> apenasEpisodio = temporadas.stream()
+                .flatMap(e -> e.episodios().stream())
+                .collect(Collectors.toList());
+
+
+        // opera sobre a nova lista, essa era a lista interna da lista de temporadas.
+        apenasEpisodio.stream()
+                .filter(n -> !n.nota().equalsIgnoreCase("n/a"))
+                .sorted(Comparator.comparing(EpisodiosTemporadaEspecifica::nota).reversed())
+                .limit(10)
                 .forEach(System.out::println);
 
-//        episodios.forEach(System.out::println);
+
     }
 
 
@@ -81,24 +108,5 @@ public class Principal {
         System.out.println(todosEpisodioSerie);
     }
 
-    public void treinoStream() {
-        List<Integer> numeros = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
-        numeros.stream()
-                .forEach(n -> {
-                    System.out.println("Tabuada do " + n);
-                    IntStream.range(0, 10)
-                            .forEach(i -> {
-                                System.out.println(n + " X " + i + " = " + n * i);
-                            });
-                });
-
-        for (int i = 0; i <= numeros.size(); i++) {
-            System.out.println("Tabuada do " + i);
-            for (int j = 0; j < numeros.size(); j++) {
-                System.out.println(i + " X " + j + " = "+ i * j);
-            }
-        }
-    }
 
 }
