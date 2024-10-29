@@ -2,9 +2,10 @@ package edu.reis.apiTreino.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public record EpisodiosTemporadaEspecifica(@SerializedName("Title") String titulo,
-                                           @SerializedName("Episode") String episodio,
-                                           @SerializedName("imdbRating") String nota) {
+public record ModeloEpisodio(@SerializedName("Title") String titulo,
+                             @SerializedName("Episode") String episodio,
+                             @SerializedName("imdbRating") String nota,
+                             @SerializedName("Released") String data) {
 
 
     @Override

@@ -24,6 +24,7 @@ public class ApiTreinoApplication implements CommandLineRunner {
 
         Principal principal = new Principal();
         principal.insiraTitulo();
+
 //        principal.buscarEpisodioTemporadaEspecifica(5);
     }
 }
