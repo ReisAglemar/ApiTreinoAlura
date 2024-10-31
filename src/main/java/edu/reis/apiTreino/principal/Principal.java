@@ -1,15 +1,13 @@
 package edu.reis.apiTreino.principal;
 
+import ch.qos.logback.core.encoder.JsonEscapeUtil;
 import edu.reis.apiTreino.model.BuscaSerie;
 import edu.reis.apiTreino.model.ListaEpisodio;
 import edu.reis.apiTreino.model.ModeloEpisodioPessoal;
 import edu.reis.apiTreino.service.ConsumoAPI;
 import edu.reis.apiTreino.service.ConverteJsonClasse;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Principal {
@@ -25,6 +23,8 @@ public class Principal {
     private String linkApi;
     private String json;
     private final List<ListaEpisodio> TEMPORADAS = new ArrayList<>();
+    private List<ModeloEpisodioPessoal> apenasEpisodioTrataddos = new ArrayList<>();
+
 
     public void insiraTitulo() {
         System.out.print("\n\nDigite um titulo para pesquisar: ");
@@ -52,8 +52,8 @@ public class Principal {
             this.TEMPORADAS.add(listaEpisodio);
         }
 
-        System.out.println("======== Resultado Para Todos os Episódios de Todas as Temporadas ========\n");
-        TEMPORADAS.forEach(System.out::println);
+//        System.out.println("======== Resultado Para Todos os Episódios de Todas as Temporadas ========\n");
+//        TEMPORADAS.forEach(System.out::println);
         dezMelhoresEpisodioTratado();
     }
 
@@ -90,7 +90,7 @@ public class Principal {
 
     private void dezMelhoresEpisodioTratado() {
 
-        List<ModeloEpisodioPessoal> apenasEpisodioTrataddos = TEMPORADAS.stream()
+        apenasEpisodioTrataddos = TEMPORADAS.stream()
                 .flatMap(e -> e.episodios().stream()
                         .map(o -> new ModeloEpisodioPessoal(e.temporada(), o)))
                 .collect(Collectors.toList());
@@ -103,6 +103,22 @@ public class Principal {
                 .forEach(System.out::println);
     }
 
+    public void buscaEpisodioDentreDezMaisTratado() {
+
+        System.out.print("Digite o nome do Episodio: ");
+        String busca = SCANNER.nextLine();
+
+        Optional<ModeloEpisodioPessoal> episodio = apenasEpisodioTrataddos.stream()
+                .filter(t -> t.getTITULO().toLowerCase().contains(busca.toLowerCase()))
+                .findFirst();
+
+        if (episodio.isPresent()) {
+            System.out.println(episodio.get().toString());
+            return;
+        }
+
+        System.out.println("Episódio não encontrado");
+    }
 
     public void buscaEpisodioTemporadaEspecifica(int episodio) {
 
@@ -123,5 +139,35 @@ public class Principal {
         this.json = CONSUMO.obterConsumo(linkApi);
         ListaEpisodio listaEpisodio = CONVERSOR.converteTipos(json, ListaEpisodio.class);
         System.out.println(listaEpisodio);
+    }
+
+    public void calculaMediaAvalicaoTempordas() {
+
+        Map<Integer, Double> listaMediaAvalicaoTempordas = apenasEpisodioTrataddos.stream()
+                .filter(e -> e.getNota() > 0.0f)
+                .collect(Collectors.groupingBy(ModeloEpisodioPessoal::getTEMPORADA,
+                        Collectors.averagingDouble(ModeloEpisodioPessoal::getNota)));
+
+        System.out.println(listaMediaAvalicaoTempordas);
+    }
+
+    public void dadosEstatisticao() {
+
+        DoubleSummaryStatistics estatistica = apenasEpisodioTrataddos.stream()
+                .filter(e -> e.getNota() > 0)
+                .collect(Collectors.summarizingDouble(ModeloEpisodioPessoal::getNota));
+
+        String saida = """
+
+                ============= Dados Estatísticos =============
+
+                    Média Das Notas: %.1f
+                    Nota Máxima: %.1f
+                    Nota Minima: %.1f
+                    Total de Episódios Avaliados: %d
+
+                """.formatted(estatistica.getAverage(), estatistica.getMax(), estatistica.getMin(), estatistica.getCount());
+
+        System.out.println(saida);
     }
 }
