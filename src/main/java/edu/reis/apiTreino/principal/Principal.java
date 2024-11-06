@@ -1,9 +1,9 @@
 package edu.reis.apiTreino.principal;
 
-import ch.qos.logback.core.encoder.JsonEscapeUtil;
 import edu.reis.apiTreino.model.BuscaSerie;
 import edu.reis.apiTreino.model.ListaEpisodio;
 import edu.reis.apiTreino.model.ModeloEpisodioPessoal;
+import edu.reis.apiTreino.model.ModeloSeriePessoal;
 import edu.reis.apiTreino.service.ConsumoAPI;
 import edu.reis.apiTreino.service.ConverteJsonClasse;
 
@@ -22,39 +22,141 @@ public class Principal {
     private String titulo;
     private String linkApi;
     private String json;
-    private final List<ListaEpisodio> TEMPORADAS = new ArrayList<>();
-    private List<ModeloEpisodioPessoal> apenasEpisodioTrataddos = new ArrayList<>();
+    private List<ListaEpisodio> episodios = new ArrayList<>();
+    private List<ModeloEpisodioPessoal> episodiosObjeto = new ArrayList<>();
+    private List<ModeloSeriePessoal> seriesObjeto = new ArrayList<>();
+    private List<BuscaSerie> series = new ArrayList<>();
 
 
-    public void insiraTitulo() {
-        System.out.print("\n\nDigite um titulo para pesquisar: ");
-        this.titulo = SCANNER.nextLine();
-        buscaSerie();
+    public void menu() {
+
+        while (true) {
+            String menu = """
+                    
+                    Escolha Uma Opção
+                    
+                    1- Buscar Série.
+                    
+                    2- Buscar Todos os Episódios de Uma Série.
+                    
+                    3- Ver os Melhores Episódios de Uma Série.
+                    
+                    4- Listar Séries Buscadas.
+                    
+                    5- Listar Episódios Buscados.
+                    
+                    0- Para Sair.
+                    
+                    """;
+
+            System.out.println(menu);
+
+
+            try {
+                int opcao = Integer.parseInt(SCANNER.nextLine());
+                switch (opcao) {
+                    case 1:
+                        insiraTitulo();
+                        series.add(buscaSerie());
+                        break;
+
+                    case 2:
+                        insiraTitulo();
+                        buscaTodosEpisodio(buscaSerie());
+                        break;
+
+                    case 3:
+                        melhoresEpisodios();
+                        break;
+
+                    case 4:
+                        listaSerieBuscadas();
+                        break;
+
+                    case 5:
+                        listaEpisodioBuscadas();
+                        break;
+
+                    case 0:
+                        System.out.println("Fim do Programa");
+                        return;
+
+                    default:
+                        System.out.println("ERRO: Opção Inválida");
+                        break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("ERRO: Você Deve Inserir um Número Inteiro");
+            } catch (Exception e) {
+                System.out.println("ERRO: " + e.getMessage());
+            }
+        }
+
     }
 
 
-    private void buscaSerie() {
+    private void insiraTitulo() {
+        System.out.print("\n\nDigite um titulo para pesquisar: ");
+        this.titulo = SCANNER.nextLine();
+    }
+
+
+    private BuscaSerie buscaSerie() {
 
         this.linkApi = DOMINIO + titulo.replace(" ", "+") + API_KEY;
         this.json = CONSUMO.obterConsumo(linkApi);
         this.buscaSerie = CONVERSOR.converteTipos(json, BuscaSerie.class);
-        System.out.println(buscaSerie.toString());
-        buscaTodosEpisodio();
+        return buscaSerie;
     }
 
 
-    private void buscaTodosEpisodio() {
+    private void buscaTodosEpisodio(BuscaSerie busca) {
 
-        for (int i = 1; i <= Integer.parseInt(buscaSerie.temporadas()); i++) {
+        for (int i = 1; i <= Integer.parseInt(busca.temporadas()); i++) {
+
             this.linkApi = DOMINIO + titulo.replace(" ", "+") + SEASON + i + API_KEY;
             this.json = CONSUMO.obterConsumo(linkApi);
             ListaEpisodio listaEpisodio = CONVERSOR.converteTipos(json, ListaEpisodio.class);
-            this.TEMPORADAS.add(listaEpisodio);
+            episodios.add(listaEpisodio);
         }
 
-//        System.out.println("======== Resultado Para Todos os Episódios de Todas as Temporadas ========\n");
-//        TEMPORADAS.forEach(System.out::println);
-        dezMelhoresEpisodioTratado();
+        episodiosObjeto = episodios.stream()
+                .flatMap(e -> e.episodios().stream()
+                        .map(o -> new ModeloEpisodioPessoal(e.temporada(), e.nomeSerie(), o)))
+                .collect(Collectors.toList());
+    }
+
+
+
+    private void listaSerieBuscadas() {
+
+        seriesObjeto = series.stream()
+                        .map(s -> new ModeloSeriePessoal(s))
+                                .collect(Collectors.toList());
+
+        seriesObjeto.forEach(System.out::println);
+    }
+
+    private void listaEpisodioBuscadas() {
+        episodiosObjeto.forEach(System.out::println);
+    }
+
+    private void melhoresEpisodios() {
+
+
+        if (!episodiosObjeto.isEmpty()) {
+
+            System.out.println("Insira a Nota de Corte");
+            int nota = Integer.parseInt(SCANNER.nextLine());
+
+            episodiosObjeto.stream()
+                    .filter(o -> o.getNota() > nota)
+                    .sorted(Comparator.comparing(ModeloEpisodioPessoal::getNota))
+                    .forEach(System.out::println);
+            return;
+        }
+
+        System.out.println("Lista vazia! Faça Uma Busca de Episódios");
     }
 
 
@@ -88,28 +190,28 @@ public class Principal {
 //    }
 //
 
-    private void dezMelhoresEpisodioTratado() {
-
-        apenasEpisodioTrataddos = TEMPORADAS.stream()
-                .flatMap(e -> e.episodios().stream()
-                        .map(o -> new ModeloEpisodioPessoal(e.temporada(), o)))
-                .collect(Collectors.toList());
-
-
-        apenasEpisodioTrataddos.stream()
-                .filter(n -> n.getNota() > 0.0f)
-                .sorted(Comparator.comparing(ModeloEpisodioPessoal::getNota).reversed())
-                .limit(10)
-                .forEach(System.out::println);
-    }
+//    private void dezMelhoresEpisodioTratado() {
+//
+//        episodiosObjeto = episodios.stream()
+//                .flatMap(e -> e.episodios().stream()
+//                        .map(o -> new ModeloEpisodioPessoal(e.temporada(), o)))
+//                .collect(Collectors.toList());
+//
+//
+//        episodiosObjeto.stream()
+//                .filter(n -> n.getNota() > 0.0f)
+//                .sorted(Comparator.comparing(ModeloEpisodioPessoal::getNota).reversed())
+//                .limit(10)
+//                .forEach(System.out::println);
+//    }
 
     public void buscaEpisodioDentreDezMaisTratado() {
 
         System.out.print("Digite o nome do Episodio: ");
         String busca = SCANNER.nextLine();
 
-        Optional<ModeloEpisodioPessoal> episodio = apenasEpisodioTrataddos.stream()
-                .filter(t -> t.getTITULO().toLowerCase().contains(busca.toLowerCase()))
+        Optional<ModeloEpisodioPessoal> episodio = episodiosObjeto.stream()
+                .filter(t -> t.getTITULO_EPISODIO().toLowerCase().contains(busca.toLowerCase()))
                 .findFirst();
 
         if (episodio.isPresent()) {
@@ -120,52 +222,43 @@ public class Principal {
         System.out.println("Episódio não encontrado");
     }
 
-    public void buscaEpisodioTemporadaEspecifica(int episodio) {
+    public void buscaEpisodiosTemporadaEspecifica(int temporada) {
 
         if (buscaSerie == null) {
             System.out.println("Vocẽ deve primeiro buscar por uma série");
             return;
         }
 
-        boolean intervaloValido = episodio > 0 && episodio <= Integer.parseInt(buscaSerie.temporadas());
+        boolean intervaloValido = temporada > 0 && temporada <= Integer.parseInt(buscaSerie.temporadas());
 
         if (!intervaloValido) {
             System.out.println("O episódio deve ser maior que 0 e menor ou igual a " + buscaSerie.temporadas());
-            System.out.println("Vocẽ informou: " + episodio);
+            System.out.println("Vocẽ informou: " + temporada);
             return;
         }
 
-        this.linkApi = DOMINIO + titulo.replace(" ", "+") + SEASON + episodio + API_KEY;
+        this.linkApi = DOMINIO + titulo.replace(" ", "+") + SEASON + temporada + API_KEY;
         this.json = CONSUMO.obterConsumo(linkApi);
         ListaEpisodio listaEpisodio = CONVERSOR.converteTipos(json, ListaEpisodio.class);
         System.out.println(listaEpisodio);
     }
 
-    public void calculaMediaAvalicaoTempordas() {
 
-        Map<Integer, Double> listaMediaAvalicaoTempordas = apenasEpisodioTrataddos.stream()
-                .filter(e -> e.getNota() > 0.0f)
-                .collect(Collectors.groupingBy(ModeloEpisodioPessoal::getTEMPORADA,
-                        Collectors.averagingDouble(ModeloEpisodioPessoal::getNota)));
+    public void dadosEstatistico() {
 
-        System.out.println(listaMediaAvalicaoTempordas);
-    }
-
-    public void dadosEstatisticao() {
-
-        DoubleSummaryStatistics estatistica = apenasEpisodioTrataddos.stream()
+        DoubleSummaryStatistics estatistica = episodiosObjeto.stream()
                 .filter(e -> e.getNota() > 0)
                 .collect(Collectors.summarizingDouble(ModeloEpisodioPessoal::getNota));
 
         String saida = """
-
+                
                 ============= Dados Estatísticos =============
-
+                
                     Média Das Notas: %.1f
                     Nota Máxima: %.1f
                     Nota Minima: %.1f
                     Total de Episódios Avaliados: %d
-
+                
                 """.formatted(estatistica.getAverage(), estatistica.getMax(), estatistica.getMin(), estatistica.getCount());
 
         System.out.println(saida);
