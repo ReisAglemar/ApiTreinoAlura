@@ -1,15 +1,13 @@
 package edu.reis.apiTreino.model;
 
-import com.google.gson.annotations.SerializedName;
 
-import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
 public class ModeloSeriePessoal {
 
     private String titulo;
-    private String genero;
+    private GenerosEnum genero;
     private Integer temporadas;
     private Double nota;
     private String ano;
@@ -22,7 +20,7 @@ public class ModeloSeriePessoal {
 
     public ModeloSeriePessoal(BuscaSerie buscaSerie) {
         this.titulo = buscaSerie.titulo();
-        this.genero = buscaSerie.genero();
+        this.genero = GenerosEnum.fromString(buscaSerie.genero().split(",")[0].trim());
         this.temporadas = OptionalInt.of(Integer.valueOf(buscaSerie.temporadas())).orElse(0);
         this.nota = OptionalDouble.of(Double.valueOf(buscaSerie.nota())).orElse(0);
         this.ano = buscaSerie.ano();
@@ -33,18 +31,66 @@ public class ModeloSeriePessoal {
         this.poster = buscaSerie.poster();
     }
 
-    @Override
+
     public String toString() {
-        return
-                "titulo='" + titulo +
-                ", genero='" + genero +
-                ", temporadas=" + temporadas +
-                ", nota=" + nota +
-                ", ano='" + ano +
-                ", sinopse='" + sinopse +
-                ", idiomas='" + idiomas +
-                ", pais='" + pais +
-                ", tipo='" + tipo +
-                ", poster='" + poster;
+        return """
+                
+                = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+                
+                Nome da Série: %s
+                Gênero: %s
+                Total de Temporadas: %d
+                Avaliação: %.1f
+                Ano: %s
+                
+                Sinopse: %s
+                
+                Idioma: %s
+                Pais: %s
+                Tipo: %s
+                Poster: %s
+                
+                """.formatted(getTitulo(), getGenero(), getTemporadas(),getNota(), getAno(),
+                getSinopse(), getIdiomas(), getPais(), getTipo(), getPoster());
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public GenerosEnum getGenero() {
+        return genero;
+    }
+
+    public Integer getTemporadas() {
+        return temporadas;
+    }
+
+    public Double getNota() {
+        return nota;
+    }
+
+    public String getAno() {
+        return ano;
+    }
+
+    public String getSinopse() {
+        return sinopse;
+    }
+
+    public String getIdiomas() {
+        return idiomas;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public String getPoster() {
+        return poster;
     }
 }

@@ -126,15 +126,17 @@ public class Principal {
                 .collect(Collectors.toList());
     }
 
-
-
     private void listaSerieBuscadas() {
 
+        //cria objetos usando stream
         seriesObjeto = series.stream()
                         .map(s -> new ModeloSeriePessoal(s))
                                 .collect(Collectors.toList());
 
-        seriesObjeto.forEach(System.out::println);
+        // ordenar os objetos por nota(maior para menor) e imprime
+        seriesObjeto.stream()
+                .sorted(Comparator.comparing(ModeloSeriePessoal::getNota).reversed())
+                .forEach(System.out::println);
     }
 
     private void listaEpisodioBuscadas() {
