@@ -1,10 +1,9 @@
 package edu.reis.apiTreino.principal;
 
-import edu.reis.apiTreino.model.BuscaSerie;
-import edu.reis.apiTreino.model.ListaEpisodio;
-import edu.reis.apiTreino.model.ModeloEpisodioPessoal;
-import edu.reis.apiTreino.model.ModeloSeriePessoal;
-import edu.reis.apiTreino.service.ConsumoAPI;
+import edu.reis.apiTreino.model.*;
+import edu.reis.apiTreino.service.ConsumoAPIChatGPT;
+import edu.reis.apiTreino.service.ConsumoAPIGemini;
+import edu.reis.apiTreino.service.ConsumoAPIOmdb;
 import edu.reis.apiTreino.service.ConverteJsonClasse;
 
 import java.util.*;
@@ -16,8 +15,10 @@ public class Principal {
     private final String API_KEY = "&apikey=b53950be";
     private final String SEASON = "&season=";
     private final Scanner SCANNER = new Scanner(System.in);
-    private final ConsumoAPI CONSUMO = new ConsumoAPI();
+    private final ConsumoAPIOmdb CONSUMO_OMDB = new ConsumoAPIOmdb();
     private final ConverteJsonClasse CONVERSOR = new ConverteJsonClasse();
+    private final ConsumoAPIChatGPT CONSUMO_GPT = new ConsumoAPIChatGPT();
+    private final ConsumoAPIGemini CONSUMO_GEMINI = new ConsumoAPIGemini();
     private BuscaSerie buscaSerie;
     private String titulo;
     private String linkApi;
@@ -74,7 +75,8 @@ public class Principal {
                         break;
 
                     case 5:
-                        listaEpisodioBuscadas();
+                        //listaEpisodioBuscadas();
+                        traduzir();
                         break;
 
                     case 0:
@@ -104,7 +106,7 @@ public class Principal {
     private BuscaSerie buscaSerie() {
 
         this.linkApi = DOMINIO + titulo.replace(" ", "+") + API_KEY;
-        this.json = CONSUMO.obterConsumo(linkApi);
+        this.json = CONSUMO_OMDB.obterConsumo(linkApi);
         this.buscaSerie = CONVERSOR.converteTipos(json, BuscaSerie.class);
         return buscaSerie;
     }
@@ -115,7 +117,7 @@ public class Principal {
         for (int i = 1; i <= Integer.parseInt(busca.temporadas()); i++) {
 
             this.linkApi = DOMINIO + titulo.replace(" ", "+") + SEASON + i + API_KEY;
-            this.json = CONSUMO.obterConsumo(linkApi);
+            this.json = CONSUMO_OMDB.obterConsumo(linkApi);
             ListaEpisodio listaEpisodio = CONVERSOR.converteTipos(json, ListaEpisodio.class);
             episodios.add(listaEpisodio);
         }
@@ -159,6 +161,13 @@ public class Principal {
         }
 
         System.out.println("Lista vazia! Faça Uma Busca de Episódios");
+    }
+
+    private void traduzir(){
+
+        String texto = SCANNER.nextLine();
+        String reposta = CONSUMO_GEMINI.obterConsumo(texto);
+        System.out.println(reposta);
     }
 
 
@@ -240,7 +249,7 @@ public class Principal {
         }
 
         this.linkApi = DOMINIO + titulo.replace(" ", "+") + SEASON + temporada + API_KEY;
-        this.json = CONSUMO.obterConsumo(linkApi);
+        this.json = CONSUMO_OMDB.obterConsumo(linkApi);
         ListaEpisodio listaEpisodio = CONVERSOR.converteTipos(json, ListaEpisodio.class);
         System.out.println(listaEpisodio);
     }
