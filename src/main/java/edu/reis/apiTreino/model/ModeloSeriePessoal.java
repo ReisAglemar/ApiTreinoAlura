@@ -1,21 +1,20 @@
 package edu.reis.apiTreino.model;
 
-
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
 public class ModeloSeriePessoal {
 
-    private String titulo;
-    private GenerosEnum genero;
-    private Integer temporadas;
-    private Double nota;
-    private String ano;
+    private final String titulo;
+    private final GenerosEnum genero;
+    private final Integer temporadas;
+    private final Double nota;
+    private final String ano;
+    private final String idiomas;
+    private final String pais;
+    private final String tipo;
+    private final String poster;
     private String sinopse;
-    private String idiomas;
-    private String pais;
-    private String tipo;
-    private String poster;
 
 
     public ModeloSeriePessoal(BuscaSerie buscaSerie) {
@@ -50,7 +49,7 @@ public class ModeloSeriePessoal {
                 Tipo: %s
                 Poster: %s
                 
-                """.formatted(getTitulo(), getGenero(), getTemporadas(),getNota(), getAno(),
+                """.formatted(getTitulo(), getGenero(), getTemporadas(), getNota(), getAno(),
                 getSinopse(), getIdiomas(), getPais(), getTipo(), getPoster());
     }
 
@@ -92,5 +91,9 @@ public class ModeloSeriePessoal {
 
     public String getPoster() {
         return poster;
+    }
+
+    public void setSinopse(String sinopse) {
+        this.sinopse = sinopse;
     }
 }

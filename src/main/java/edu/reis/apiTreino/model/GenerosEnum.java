@@ -7,7 +7,7 @@ public enum GenerosEnum {
     FICCAO_CIENTIFICA("Fantasy"),
     COMEDIA("Comedy"),
     ROMANCE("Romance"),
-    DRAMA ("Drama"),
+    DRAMA("Drama"),
     CRIME("Crime");
 
     private String respostaApi;

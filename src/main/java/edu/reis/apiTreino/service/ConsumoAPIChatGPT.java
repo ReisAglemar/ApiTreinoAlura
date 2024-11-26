@@ -6,8 +6,6 @@ import com.theokanning.openai.service.OpenAiService;
 public class ConsumoAPIChatGPT {
 
 
-
-
     public String traduzir(String texto) {
 
         OpenAiService service = new OpenAiService("sk-proj-vEwInzRdpZCruRV1nT9AkB87Az9R0XvNX6AuEXyePEHIoxFCpvCIs" +

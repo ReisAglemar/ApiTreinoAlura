@@ -16,7 +16,7 @@ public record RespostaGemini(@SerializedName("candidates") List<Candidato> candi
     public record Parte(@SerializedName("text") String texto) {
     }
 
-    public String getTexto(){
+    public String getTexto() {
         String texto = candidatos.stream()
                 .map(Candidato::contem)
                 .flatMap(contem -> contem.partes().stream())
