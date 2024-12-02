@@ -15,7 +15,7 @@ public class ConsumoAPIGemini {
     public String obterConsumo(String texto) {
 
         String link = "https://generativelanguage.googleapis.com/v1beta/models/" +
-                "gemini-1.5-flash:generateContent?key=Essa Não né, a Outra Não Tem Problema";
+                "gemini-1.5-flash:generateContent?key=" + System.getenv("KEY_GEMINI");
 
         String corpoJson = """
                 {

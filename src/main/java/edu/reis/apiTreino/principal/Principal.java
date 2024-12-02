@@ -4,9 +4,11 @@ import edu.reis.apiTreino.model.BuscaSerie;
 import edu.reis.apiTreino.model.ListaEpisodio;
 import edu.reis.apiTreino.model.ModeloEpisodioPessoal;
 import edu.reis.apiTreino.model.ModeloSeriePessoal;
+import edu.reis.apiTreino.repository.ModeloSeriePessoalRepository;
 import edu.reis.apiTreino.service.ConsumoAPIGemini;
 import edu.reis.apiTreino.service.ConsumoAPIOmdb;
 import edu.reis.apiTreino.service.ConverteJsonClasse;
+import org.hibernate.event.spi.SaveOrUpdateEvent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,10 +29,15 @@ public class Principal {
     private String titulo;
     private String linkApi;
     private String json;
-    private List<BuscaSerie> series = new ArrayList<>();
-    private List<ListaEpisodio> episodios = new ArrayList<>();
+    private final List<BuscaSerie> series = new ArrayList<>();
+    private final List<ListaEpisodio> episodios = new ArrayList<>();
     private List<ModeloEpisodioPessoal> episodiosObjeto = new ArrayList<>();
     private List<ModeloSeriePessoal> seriesObjeto = new ArrayList<>();
+    private ModeloSeriePessoalRepository repository;
+
+    public Principal(ModeloSeriePessoalRepository repository) {
+        this.repository = repository;
+    }
 
 
     public void menu() {
@@ -142,7 +149,7 @@ public class Principal {
         // ordenar os objetos por nota(maior para menor) e imprime
         seriesObjeto.stream()
                 .peek(s -> s.setSinopse("Traduzido Por Google Gemini: " + traduzir(s.getSinopse())))
-                .sorted(Comparator.comparing(ModeloSeriePessoal::getNota).reversed())
+                .map(s-> repository.save(s))
                 .forEach(System.out::println);
     }
 

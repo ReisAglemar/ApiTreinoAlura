@@ -1,7 +1,5 @@
 package edu.reis.apiTreino.model;
 
-import edu.reis.apiTreino.principal.Principal;
-
 public class ModeloEpisodioPessoal {
 
     private final String TITULO_EPISODIO;
@@ -10,6 +8,8 @@ public class ModeloEpisodioPessoal {
     private final Integer TEMPORADA;
     private final String DATA_LANCAMENTO;
     private float nota;
+
+
 
 
     public ModeloEpisodioPessoal(String temporada, String nomeSerie, ModeloEpisodio modeloEpisodio) {

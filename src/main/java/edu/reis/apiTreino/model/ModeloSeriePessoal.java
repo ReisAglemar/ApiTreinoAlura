@@ -1,21 +1,55 @@
 package edu.reis.apiTreino.model;
 
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
+@Entity
+@Table (name = "series")
 public class ModeloSeriePessoal {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(unique = true)
     private final String titulo;
+
+    @Enumerated(EnumType.STRING)
     private final GenerosEnum genero;
+
+    @Column (name = "qtd_temporadas")
     private final Integer temporadas;
+
     private final Double nota;
+
+    @Column(name = "ano_lancamento")
     private final String ano;
+
     private final String idiomas;
     private final String pais;
     private final String tipo;
     private final String poster;
     private String sinopse;
 
+    @Transient
+    private List<ModeloEpisodioPessoal> episodios = new ArrayList<>();
+
+
+    public ModeloSeriePessoal() {
+        this.titulo = null;
+        this.genero = null;
+        this.temporadas = null;
+        this.nota = null;
+        this.ano = null;
+        this.idiomas = null;
+        this.pais = null;
+        this.tipo = null;
+        this.poster = null;
+    }
 
     public ModeloSeriePessoal(BuscaSerie buscaSerie) {
         this.titulo = buscaSerie.titulo();
@@ -51,6 +85,14 @@ public class ModeloSeriePessoal {
                 
                 """.formatted(getTitulo(), getGenero(), getTemporadas(), getNota(), getAno(),
                 getSinopse(), getIdiomas(), getPais(), getTipo(), getPoster());
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTitulo() {
