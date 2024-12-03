@@ -10,12 +10,13 @@ import java.net.http.HttpResponse;
 public class ConsumoAPIGemini {
 
     private final ConverteJsonClasse CONVERSOR = new ConverteJsonClasse();
+    private final String apiKey = System.getenv("KEY_GEMINI");
 
 
     public String obterConsumo(String texto) {
 
         String link = "https://generativelanguage.googleapis.com/v1beta/models/" +
-                "gemini-1.5-flash:generateContent?key=" + System.getenv("KEY_GEMINI");
+                "gemini-1.5-flash:generateContent?key=" + apiKey;
 
         String corpoJson = """
                 {
