@@ -8,7 +8,6 @@ import edu.reis.apiTreino.repository.ModeloSeriePessoalRepository;
 import edu.reis.apiTreino.service.ConsumoAPIGemini;
 import edu.reis.apiTreino.service.ConsumoAPIOmdb;
 import edu.reis.apiTreino.service.ConverteJsonClasse;
-import org.hibernate.event.spi.SaveOrUpdateEvent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,7 +28,6 @@ public class Principal {
     private String titulo;
     private String linkApi;
     private String json;
-    private final List<BuscaSerie> series = new ArrayList<>();
     private final List<ListaEpisodio> episodios = new ArrayList<>();
     private List<ModeloEpisodioPessoal> episodiosObjeto = new ArrayList<>();
     private List<ModeloSeriePessoal> seriesObjeto = new ArrayList<>();
@@ -38,7 +36,6 @@ public class Principal {
     public Principal(ModeloSeriePessoalRepository repository) {
         this.repository = repository;
     }
-
 
     public void menu() {
 
@@ -69,7 +66,7 @@ public class Principal {
                 switch (opcao) {
                     case 1:
                         insiraTitulo();
-                        series.add(buscaSerie());
+                        System.out.println(salvaSerieDb());
                         break;
 
                     case 2:
@@ -106,12 +103,10 @@ public class Principal {
 
     }
 
-
     private void insiraTitulo() {
         System.out.print("\n\nDigite um titulo para pesquisar: ");
         this.titulo = SCANNER.nextLine();
     }
-
 
     private BuscaSerie buscaSerie() {
 
@@ -121,6 +116,25 @@ public class Principal {
         return buscaSerie;
     }
 
+    private String salvaSerieDb() {
+
+        try {
+
+            ModeloSeriePessoal serieObjeto = new ModeloSeriePessoal(buscaSerie());
+
+            serieObjeto.setSinopse("Traduzido Por Google Gemini: " + traduzir(serieObjeto.getSinopse()));
+            serieObjeto = repository.save(serieObjeto);
+
+            if (serieObjeto == null) {
+                return "\nErro Ao Salvar Série: " + serieObjeto.getTitulo();
+            }
+
+        } catch (Exception e) {
+            return "\nErro: " + e.getMessage();
+        }
+
+        return "\nSérie Salva Com Sucesso!\n";
+    }
 
     private void buscaTodosEpisodio(BuscaSerie busca) {
 
@@ -138,26 +152,9 @@ public class Principal {
                 .collect(Collectors.toList());
     }
 
-
-    private void listaSerieBuscadas() {
-
-        //cria objetos usando stream
-        seriesObjeto = series.stream()
-                .map(s -> new ModeloSeriePessoal(s))
-                .collect(Collectors.toList());
-
-        // ordenar os objetos por nota(maior para menor) e imprime
-        seriesObjeto.stream()
-                .peek(s -> s.setSinopse("Traduzido Por Google Gemini: " + traduzir(s.getSinopse())))
-                .map(s-> repository.save(s))
-                .forEach(System.out::println);
-    }
-
-
     private void listaEpisodioBuscadas() {
         episodiosObjeto.forEach(System.out::println);
     }
-
 
     private void melhoresEpisodios() {
 
@@ -176,6 +173,10 @@ public class Principal {
         System.out.println("Lista vazia! Faça Uma Busca de Episódios");
     }
 
+    private void listaSerieBuscadas() {
+        seriesObjeto = repository.findAll();
+        seriesObjeto.forEach(System.out::println);
+    }
 
     private String traduzir(String texto) {
 
