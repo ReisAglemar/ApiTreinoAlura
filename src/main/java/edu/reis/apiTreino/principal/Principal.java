@@ -44,13 +44,13 @@ public class Principal {
                     
                     Escolha Uma Opção
                     
-                    1- Buscar Série.
+                    1- Salvar Série no DB.
                     
                     2- Buscar Todos os Episódios de Uma Série.
                     
                     3- Ver os Melhores Episódios de Uma Série.
                     
-                    4- Listar Séries Buscadas.
+                    4- Listar Séries Salvas no DB.
                     
                     5- Listar Episódios Buscados.
                     
@@ -79,7 +79,7 @@ public class Principal {
                         break;
 
                     case 4:
-                        listaSerieBuscadas();
+                        listaSerieSalvasDb();
                         break;
 
                     case 5:
@@ -108,25 +108,17 @@ public class Principal {
         this.titulo = SCANNER.nextLine();
     }
 
-    private BuscaSerie buscaSerie() {
-
-        this.linkApi = DOMINIO + titulo.replace(" ", "+") + API_KEY;
-        this.json = CONSUMO_OMDB.obterConsumo(linkApi);
-        this.buscaSerie = CONVERSOR.converteTipos(json, BuscaSerie.class);
-        return buscaSerie;
-    }
-
     private String salvaSerieDb() {
 
         try {
 
-            ModeloSeriePessoal serieObjeto = new ModeloSeriePessoal(buscaSerie());
+            ModeloSeriePessoal modeloSeriePessoal = new ModeloSeriePessoal(buscaSerie());
 
-            serieObjeto.setSinopse("Traduzido Por Google Gemini: " + traduzir(serieObjeto.getSinopse()));
-            serieObjeto = repository.save(serieObjeto);
+            modeloSeriePessoal.setSinopse("Traduzido Por Google Gemini: " + traduzir(modeloSeriePessoal.getSinopse()));
+            modeloSeriePessoal = repository.save(modeloSeriePessoal);
 
-            if (serieObjeto == null) {
-                return "\nErro Ao Salvar Série: " + serieObjeto.getTitulo();
+            if (modeloSeriePessoal == null) {
+                return "\nErro Ao Salvar Série: " + modeloSeriePessoal.getTitulo();
             }
 
         } catch (Exception e) {
@@ -134,6 +126,14 @@ public class Principal {
         }
 
         return "\nSérie Salva Com Sucesso!\n";
+    }
+
+    private BuscaSerie buscaSerie() {
+
+        this.linkApi = DOMINIO + titulo.replace(" ", "+") + API_KEY;
+        this.json = CONSUMO_OMDB.obterConsumo(linkApi);
+        this.buscaSerie = CONVERSOR.converteTipos(json, BuscaSerie.class);
+        return buscaSerie;
     }
 
     private void buscaTodosEpisodio(BuscaSerie busca) {
@@ -150,10 +150,6 @@ public class Principal {
                 .flatMap(e -> e.episodios().stream()
                         .map(o -> new ModeloEpisodioPessoal(e.temporada(), e.nomeSerie(), o)))
                 .collect(Collectors.toList());
-    }
-
-    private void listaEpisodioBuscadas() {
-        episodiosObjeto.forEach(System.out::println);
     }
 
     private void melhoresEpisodios() {
@@ -173,9 +169,13 @@ public class Principal {
         System.out.println("Lista vazia! Faça Uma Busca de Episódios");
     }
 
-    private void listaSerieBuscadas() {
+    private void listaSerieSalvasDb() {
         seriesObjeto = repository.findAll();
         seriesObjeto.forEach(System.out::println);
+    }
+
+    private void listaEpisodioBuscadas() {
+        episodiosObjeto.forEach(System.out::println);
     }
 
     private String traduzir(String texto) {
