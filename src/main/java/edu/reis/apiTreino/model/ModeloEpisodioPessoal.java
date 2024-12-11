@@ -1,6 +1,14 @@
 package edu.reis.apiTreino.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "episodio")
 public class ModeloEpisodioPessoal {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private final String TITULO_EPISODIO;
     private final String NOME_SERIE;
@@ -9,6 +17,17 @@ public class ModeloEpisodioPessoal {
     private final String DATA_LANCAMENTO;
     private float nota;
 
+    @ManyToOne
+    private ModeloSeriePessoal modeloSeriePessoal;
+
+    public ModeloEpisodioPessoal() {
+        this.TITULO_EPISODIO = null;
+        this.NOME_SERIE = null;
+        this.NUMERO_EPISODIO = null;
+        this.TEMPORADA = null;
+        this.DATA_LANCAMENTO = null;
+        this.nota = 0.0f;
+    }
 
 
 
@@ -25,6 +44,14 @@ public class ModeloEpisodioPessoal {
         }
 
         this.DATA_LANCAMENTO = modeloEpisodio.data();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTITULO_EPISODIO() {
@@ -49,6 +76,18 @@ public class ModeloEpisodioPessoal {
 
     public float getNota() {
         return nota;
+    }
+
+    public void setNota(float nota) {
+        this.nota = nota;
+    }
+
+    public ModeloSeriePessoal getModeloSeriePessoal() {
+        return modeloSeriePessoal;
+    }
+
+    public void setModeloSeriePessoal(ModeloSeriePessoal modeloSeriePessoal) {
+        this.modeloSeriePessoal = modeloSeriePessoal;
     }
 
     @Override
