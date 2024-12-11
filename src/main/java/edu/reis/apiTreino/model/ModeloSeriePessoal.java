@@ -35,7 +35,7 @@ public class ModeloSeriePessoal {
     private final String poster;
     private String sinopse;
 
-    @Transient
+    @OneToMany(mappedBy = "modeloSeriePessoal")
     private List<ModeloEpisodioPessoal> episodios = new ArrayList<>();
 
 
