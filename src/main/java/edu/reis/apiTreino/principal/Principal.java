@@ -9,11 +9,7 @@ import edu.reis.apiTreino.service.ConsumoAPIGemini;
 import edu.reis.apiTreino.service.ConsumoAPIOmdb;
 import edu.reis.apiTreino.service.ConverteJsonClasse;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class Principal {
 
@@ -39,14 +35,16 @@ public class Principal {
 
     public void menu() {
 
+        carregaListaSeries();
+
         while (true) {
             String menu = """
                     
                     Escolha Uma Opção
                     
-                    1- Salvar Série no DB.
+                    1- Buscar e Salvar Série no DB (OK).
                     
-                    2- Buscar Todos os Episódios de Uma Série.
+                    2- Buscar Episódios de Uma Série no DB(here).
                     
                     3- Ver os Melhores Episódios de Uma Série.
                     
@@ -70,8 +68,7 @@ public class Principal {
                         break;
 
                     case 2:
-                        insiraTitulo();
-                        buscaTodosEpisodio(buscaSerie());
+                        buscaTodosEpisodio();
                         break;
 
                     case 3:
@@ -136,20 +133,43 @@ public class Principal {
         return buscaSerie;
     }
 
-    private void buscaTodosEpisodio(BuscaSerie busca) {
+    private void buscaTodosEpisodio() {
 
-        for (int i = 1; i <= Integer.parseInt(busca.temporadas()); i++) {
+        System.out.println(!seriesObjeto.isEmpty());
 
-            this.linkApi = DOMINIO + titulo.replace(" ", "+") + SEASON + i + API_KEY;
-            this.json = CONSUMO_OMDB.obterConsumo(linkApi);
-            ListaEpisodio listaEpisodio = CONVERSOR.converteTipos(json, ListaEpisodio.class);
-            episodios.add(listaEpisodio);
+        if (!seriesObjeto.isEmpty()) {
+            listaSerieSalvasDb();
+            System.out.println("\nEscolha Uma Série Disponível");
+            String escolha = SCANNER.nextLine();
+
+            Optional<ModeloSeriePessoal> isSerieEncontrada = seriesObjeto.stream()
+                    .filter(s -> s.getTitulo().toLowerCase().contains(escolha.toLowerCase()))
+                    .findFirst();
+
+            if (isSerieEncontrada.isPresent()) {
+                System.out.println("presente");
+
+            } else {
+                System.out.println("\nA Série Escolhida Não Existe no DB");
+                System.out.println("\nVocê Escolheu: " + escolha);
+            }
+        } else {
+            System.out.println("Você Deve Buscar Uma Série Primeiro");
         }
 
-        episodiosObjeto = episodios.stream()
-                .flatMap(e -> e.episodios().stream()
-                        .map(o -> new ModeloEpisodioPessoal(e.temporada(), e.nomeSerie(), o)))
-                .collect(Collectors.toList());
+
+//        for (int i = 1; i <= Integer.parseInt(busca.temporadas()); i++) {
+//
+//            this.linkApi = DOMINIO + titulo.replace(" ", "+") + SEASON + i + API_KEY;
+//            this.json = CONSUMO_OMDB.obterConsumo(linkApi);
+//            ListaEpisodio listaEpisodio = CONVERSOR.converteTipos(json, ListaEpisodio.class);
+//            episodios.add(listaEpisodio);
+//        }
+//
+//        episodiosObjeto = episodios.stream()
+//                .flatMap(e -> e.episodios().stream()
+//                        .map(o -> new ModeloEpisodioPessoal(e.temporada(), e.nomeSerie(), o)))
+//                .collect(Collectors.toList());
     }
 
     private void melhoresEpisodios() {
@@ -169,6 +189,10 @@ public class Principal {
         System.out.println("Lista vazia! Faça Uma Busca de Episódios");
     }
 
+    private void carregaListaSeries() {
+        seriesObjeto = repository.findAll();
+    }
+
     private void listaSerieSalvasDb() {
         seriesObjeto = repository.findAll();
         seriesObjeto.forEach(System.out::println);
@@ -179,7 +203,6 @@ public class Principal {
     }
 
     private String traduzir(String texto) {
-
         String reposta = CONSUMO_GEMINI.obterConsumo(texto);
         return reposta;
     }
