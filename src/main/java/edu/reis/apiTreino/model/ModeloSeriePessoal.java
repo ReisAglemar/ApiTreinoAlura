@@ -6,9 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
+import java.util.stream.Collectors;
 
 @Entity
-@Table (name = "series")
+@Table(name = "series")
 public class ModeloSeriePessoal {
 
     @Id
@@ -21,7 +22,7 @@ public class ModeloSeriePessoal {
     @Enumerated(EnumType.STRING)
     private final GenerosEnum genero;
 
-    @Column (name = "qtd_temporadas")
+    @Column(name = "qtd_temporadas")
     private final Integer temporadas;
 
     private final Double nota;
@@ -35,7 +36,7 @@ public class ModeloSeriePessoal {
     private final String poster;
     private String sinopse;
 
-    @OneToMany(mappedBy = "modeloSeriePessoal")
+    @OneToMany(mappedBy = "modeloSeriePessoal", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ModeloEpisodioPessoal> episodios = new ArrayList<>();
 
 
@@ -66,6 +67,7 @@ public class ModeloSeriePessoal {
 
 
     public String toString() {
+
         return """
                 
                 = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -83,8 +85,10 @@ public class ModeloSeriePessoal {
                 Tipo: %s
                 Poster: %s
                 
+                Episodios: %s
+                
                 """.formatted(getTitulo(), getGenero(), getTemporadas(), getNota(), getAno(),
-                getSinopse(), getIdiomas(), getPais(), getTipo(), getPoster());
+                getSinopse(), getIdiomas(), getPais(), getTipo(), getPoster(), this.episodios);
     }
 
     public long getId() {
@@ -137,5 +141,14 @@ public class ModeloSeriePessoal {
 
     public void setSinopse(String sinopse) {
         this.sinopse = sinopse;
+    }
+
+    public List<ModeloEpisodioPessoal> getEpisodios() {
+        return episodios;
+    }
+
+    public void setEpisodios(List<ModeloEpisodioPessoal> episodios) {
+        episodios.forEach(e -> e.setModeloSeriePessoal(this));
+        this.episodios = episodios;
     }
 }
