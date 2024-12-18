@@ -59,6 +59,8 @@ public class Principal {
                     
                     6- Buscar Série Por ID - OPERAÇÃO DB.
                     
+                    7- Listar as Cinco Melhores Série no DB - OPERAÇÃO DB.
+                    
                     0- Para Sair.
                     
                     """;
@@ -89,6 +91,9 @@ public class Principal {
                         break;
                     case 6:
                         buscaSeriePorIDNoDB();
+                        break;
+                    case 7:
+                        listaAs5Melhores();
                         break;
                     case 0:
                         System.out.println("Fim do Programa");
@@ -231,5 +236,11 @@ public class Principal {
     private String traduzir(String texto) {
         String reposta = CONSUMO_GEMINI.obterConsumo(texto);
         return reposta;
+    }
+
+    private void listaAs5Melhores() {
+        List<ModeloSeriePessoal> as5Melhors = repository.findTop5ByOrderByIdDesc();
+        as5Melhors.stream()
+                .forEach(s -> System.out.println(s.getTitulo() + " - Nota: "+ s.getNota()));
     }
 }
