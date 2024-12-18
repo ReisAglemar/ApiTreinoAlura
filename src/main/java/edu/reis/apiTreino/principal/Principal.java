@@ -47,15 +47,17 @@ public class Principal {
                     
                     Escolha Uma Opção
                     
-                    1- Buscar e Salvar Série.
+                    1- Buscar e Salvar Série - CONSUMO API.
                     
-                    2- Buscar e Salvar Episódios.
+                    2- Buscar e Salvar Episódios - CONSUMO API.
                     
                     3- Ver os Melhores Episódios de Uma Série(NOT).
                     
-                    4- Listar Séries Salvas no DB.
+                    4- Listar Séries Salvas no DB - OPERAÇÃO DB.
                     
-                    5- Listar Episódios Buscados(NOT).
+                    5- Buscar Série Por Nome - OPERAÇÃO DB.
+                    
+                    6- Buscar Série Por ID - OPERAÇÃO DB.
                     
                     0- Para Sair.
                     
@@ -83,9 +85,11 @@ public class Principal {
                         break;
 
                     case 5:
-                        listaEpisodioBuscadas();
+                        buscaSeriePorNomeNoDB();
                         break;
-
+                    case 6:
+                        buscaSeriePorIDNoDB();
+                        break;
                     case 0:
                         System.out.println("Fim do Programa");
                         return;
@@ -192,8 +196,36 @@ public class Principal {
         seriesObjeto.forEach(System.out::println);
     }
 
-    private void listaEpisodioBuscadas() {
-        episodiosObjeto.forEach(System.out::println);
+    private void buscaSeriePorNomeNoDB() {
+        System.out.println("\n Digite o Nome ou Parte Dele Para Buscar Uma Serie no DB");
+        String nomeSerie = SCANNER.nextLine();
+        Optional<ModeloSeriePessoal> serie = repository.findByTituloContainingIgnoreCase(nomeSerie);
+
+        if (serie.isPresent()) {
+            ModeloSeriePessoal serieEncontrada = serie.get();
+            System.out.println(serieEncontrada);
+        } else {
+            System.out.println("\nSérie Não Cadastrada!");
+        }
+    }
+
+    private void buscaSeriePorIDNoDB() {
+        System.out.println("\n Digite o ID do Serie no DB");
+        String idSerie = SCANNER.nextLine();
+
+        try {
+            Long id = Long.parseLong(idSerie);
+            Optional<ModeloSeriePessoal> serie = repository.findById(id);
+
+            if (serie.isPresent()) {
+                ModeloSeriePessoal serieEncontrada = serie.get();
+                System.out.println(serieEncontrada);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Erro Com o ID do Serie: " + idSerie);
+            System.out.println("Erro Com o ID do Serie: " + e.getMessage());
+            System.out.println("Você Deve Informado um Número Inteiro");
+        }
     }
 
     private String traduzir(String texto) {
