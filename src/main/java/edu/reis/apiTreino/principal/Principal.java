@@ -1,9 +1,6 @@
 package edu.reis.apiTreino.principal;
 
-import edu.reis.apiTreino.model.BuscaSerie;
-import edu.reis.apiTreino.model.ListaEpisodio;
-import edu.reis.apiTreino.model.ModeloEpisodioPessoal;
-import edu.reis.apiTreino.model.ModeloSeriePessoal;
+import edu.reis.apiTreino.model.*;
 import edu.reis.apiTreino.repository.ModeloSeriePessoalRepository;
 import edu.reis.apiTreino.service.ConsumoAPIGemini;
 import edu.reis.apiTreino.service.ConsumoAPIOmdb;
@@ -51,7 +48,7 @@ public class Principal {
                     
                     2- Buscar e Salvar Episódios - CONSUMO API.
                     
-                    3- Ver os Melhores Episódios de Uma Série(NOT).
+                    3- Listar Episódios Por Nota - OPERAÇÃO DB.
                     
                     4- Listar Séries Salvas no DB - OPERAÇÃO DB.
                     
@@ -60,6 +57,8 @@ public class Principal {
                     6- Buscar Série Por ID - OPERAÇÃO DB.
                     
                     7- Listar as Cinco Melhores Série no DB - OPERAÇÃO DB.
+                    
+                    8- Buscar Série Por Categorias/Gêneros - OPERAÇÃO DB.
                     
                     0- Para Sair.
                     
@@ -79,7 +78,7 @@ public class Principal {
                         break;
 
                     case 3:
-                        melhoresEpisodios();
+                        listaEpisodiosPorNota();
                         break;
 
                     case 4:
@@ -94,6 +93,9 @@ public class Principal {
                         break;
                     case 7:
                         listaAs5Melhores();
+                        break;
+                    case 8:
+                        buscaSeriePorGenero();
                         break;
                     case 0:
                         System.out.println("Fim do Programa");
@@ -180,20 +182,32 @@ public class Principal {
         }
     }
 
-    private void melhoresEpisodios() {
+    //funciona, mas está errado, precisa melhorar
+    private void listaEpisodiosPorNota() {
+        System.out.println("\nInsira Uma Nota Mínima:");
+        String nota = SCANNER.nextLine();
 
-        if (!episodiosObjeto.isEmpty()) {
+        try {
+            Float notaFloat = Float.parseFloat(nota);
+            List<ModeloSeriePessoal> series = repository.findAll();
 
-            System.out.println("Insira a Nota de Corte");
-            int nota = Integer.parseInt(SCANNER.nextLine());
+            List<ModeloEpisodioPessoal>melhoresEpisodios = series.stream()
+                    .flatMap(s -> s.getEpisodios().stream())
+                    .filter(e -> e.getNota() > notaFloat)
+                    .collect(Collectors.toList());
 
-            episodiosObjeto.stream()
-                    .filter(o -> o.getNota() > nota)
-                    .sorted(Comparator.comparing(ModeloEpisodioPessoal::getNota))
-                    .forEach(System.out::println);
-            return;
+            melhoresEpisodios.stream()
+                    .forEach(e -> System.out.println(e.getTITULO_EPISODIO() +
+                            " - Nota: " + e.getNota()));
+
+
+        }catch (NumberFormatException e){
+            System.out.println("\nErro: Insira um Número");
+            System.out.println("\nVocê Escolheu: " + nota);
+            System.out.println("\nErro: " + e.getMessage());
         }
-        System.out.println("Lista vazia! Faça Uma Busca de Episódios");
+
+
     }
 
     private void listaSerieSalvasDb() {
@@ -239,8 +253,20 @@ public class Principal {
     }
 
     private void listaAs5Melhores() {
-        List<ModeloSeriePessoal> as5Melhors = repository.findTop5ByOrderByIdDesc();
-        as5Melhors.stream()
-                .forEach(s -> System.out.println(s.getTitulo() + " - Nota: "+ s.getNota()));
+        List<ModeloSeriePessoal> as5Melhores = repository.findTop5ByOrderByIdDesc();
+        as5Melhores.stream()
+                .forEach(s -> System.out.println(s.getTitulo() +
+                        " - Nota: "+ s.getNota()));
+    }
+
+    private void buscaSeriePorGenero() {
+        System.out.println("\n Digite o Gênero da Serie");
+        String generoInserido = SCANNER.nextLine();
+        GenerosEnum genero = GenerosEnum.fromBuscaEmPortugues(generoInserido);
+        List<ModeloSeriePessoal> seriePorGenero = repository.findByGenero(genero);
+        seriePorGenero.stream()
+                .forEach(s -> System.out.println(s.getTitulo() +
+                        " - Nota: "+ s.getNota() +
+                        " - Gênero: " + s.getGenero()));
     }
 }

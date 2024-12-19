@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "series")
@@ -54,7 +53,7 @@ public class ModeloSeriePessoal {
 
     public ModeloSeriePessoal(BuscaSerie buscaSerie) {
         this.titulo = buscaSerie.titulo();
-        this.genero = GenerosEnum.fromString(buscaSerie.genero().split(",")[0].trim());
+        this.genero = GenerosEnum.fromApi(buscaSerie.genero().split(",")[0].trim());
         this.temporadas = OptionalInt.of(Integer.valueOf(buscaSerie.temporadas())).orElse(0);
         this.nota = OptionalDouble.of(Double.valueOf(buscaSerie.nota())).orElse(0);
         this.ano = buscaSerie.ano();
