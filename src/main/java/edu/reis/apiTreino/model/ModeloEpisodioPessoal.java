@@ -30,7 +30,6 @@ public class ModeloEpisodioPessoal {
     }
 
 
-
     public ModeloEpisodioPessoal(String temporada, String nomeSerie, ModeloEpisodio modeloEpisodio) {
         this.TITULO_EPISODIO = modeloEpisodio.titulo();
         this.NOME_SERIE = nomeSerie;

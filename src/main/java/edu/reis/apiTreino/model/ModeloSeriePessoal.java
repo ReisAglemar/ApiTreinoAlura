@@ -84,10 +84,8 @@ public class ModeloSeriePessoal {
                 Tipo: %s
                 Poster: %s
                 
-                Episodios: %s
-                
                 """.formatted(getTitulo(), getGenero(), getTemporadas(), getNota(), getAno(),
-                getSinopse(), getIdiomas(), getPais(), getTipo(), getPoster(), this.episodios);
+                getSinopse(), getIdiomas(), getPais(), getTipo(), getPoster());
     }
 
     public long getId() {
