@@ -1,6 +1,7 @@
 package edu.reis.apiTreino;
 
 import edu.reis.apiTreino.principal.Principal;
+import edu.reis.apiTreino.repository.ModeloEpisodioPessoalRepository;
 import edu.reis.apiTreino.repository.ModeloSeriePessoalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -12,7 +13,10 @@ import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
 public class ApiTreinoApplication implements CommandLineRunner {
 
     @Autowired
-    private ModeloSeriePessoalRepository repository;
+    private ModeloSeriePessoalRepository serieRepository;
+
+    @Autowired
+    private ModeloEpisodioPessoalRepository episodioRepository;
 
     private final ProjectInfoAutoConfiguration projectInfoAutoConfiguration;
 
@@ -27,7 +31,7 @@ public class ApiTreinoApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        Principal principal = new Principal(repository);
+        Principal principal = new Principal(serieRepository, episodioRepository);
         principal.menu();
 
     }

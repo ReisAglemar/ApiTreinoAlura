@@ -1,6 +1,7 @@
 package edu.reis.apiTreino.principal;
 
 import edu.reis.apiTreino.model.*;
+import edu.reis.apiTreino.repository.ModeloEpisodioPessoalRepository;
 import edu.reis.apiTreino.repository.ModeloSeriePessoalRepository;
 import edu.reis.apiTreino.service.ConsumoAPIGemini;
 import edu.reis.apiTreino.service.ConsumoAPIOmdb;
@@ -25,15 +26,17 @@ public class Principal {
     private final List<ListaEpisodio> episodios = new ArrayList<>();
     private List<ModeloEpisodioPessoal> episodiosObjeto = new ArrayList<>();
     private List<ModeloSeriePessoal> seriesObjeto = new ArrayList<>();
-    private ModeloSeriePessoalRepository repository;
+    private ModeloSeriePessoalRepository serieRepository;
+    private ModeloEpisodioPessoalRepository episodioRepository;
 
-    public Principal(ModeloSeriePessoalRepository repository) {
-        this.repository = repository;
+    public Principal(ModeloSeriePessoalRepository serieRepository, ModeloEpisodioPessoalRepository episodioRepository) {
+        this.serieRepository = serieRepository;
+        this.episodioRepository = episodioRepository;
     }
 
     //carrega uma lista dados de seções anteriores
     private void carregaListaInicialSeries() {
-        seriesObjeto = repository.findAll();
+        seriesObjeto = serieRepository.findAll();
     }
 
     public void menu() {
@@ -72,19 +75,15 @@ public class Principal {
                         insiraTitulo();
                         System.out.println(salvaSerieDb());
                         break;
-
                     case 2:
                         buscaTodosEpisodio();
                         break;
-
                     case 3:
                         listaEpisodiosPorNota();
                         break;
-
                     case 4:
                         listaSerieSalvasDb();
                         break;
-
                     case 5:
                         buscaSeriePorNomeNoDB();
                         break;
@@ -100,7 +99,6 @@ public class Principal {
                     case 0:
                         System.out.println("Fim do Programa");
                         return;
-
                     default:
                         System.out.println("ERRO: Opção Inválida");
                         break;
@@ -125,7 +123,7 @@ public class Principal {
             ModeloSeriePessoal modeloSeriePessoal = new ModeloSeriePessoal(buscaSerie());
 
             modeloSeriePessoal.setSinopse("Traduzido Por Google Gemini: " + traduzir(modeloSeriePessoal.getSinopse()));
-            modeloSeriePessoal = repository.save(modeloSeriePessoal);
+            modeloSeriePessoal = serieRepository.save(modeloSeriePessoal);
 
             if (modeloSeriePessoal == null) {
                 return "\nErro Ao Salvar Série: " + modeloSeriePessoal.getTitulo();
@@ -172,7 +170,7 @@ public class Principal {
                         .collect(Collectors.toList());
 
                 ModeloSeriePessoal.setEpisodios(episodiosObjeto);
-                repository.save(ModeloSeriePessoal);
+                serieRepository.save(ModeloSeriePessoal);
             } else {
                 System.out.println("\nA Série Escolhida Não Existe no DB");
                 System.out.println("\nVocê Escolheu: " + escolha);
@@ -189,18 +187,13 @@ public class Principal {
 
         try {
             Float notaFloat = Float.parseFloat(nota);
-            List<ModeloSeriePessoal> series = repository.findAll();
 
-            List<ModeloEpisodioPessoal>melhoresEpisodios = series.stream()
-                    .flatMap(s -> s.getEpisodios().stream())
-                    .filter(e -> e.getNota() > notaFloat)
-                    .collect(Collectors.toList());
+            List<ModeloEpisodioPessoal> melhoresEpisodios = episodioRepository.findByNotaGreaterThanEqual(notaFloat);
 
             melhoresEpisodios.stream()
+                    .sorted(Comparator.comparing(ModeloEpisodioPessoal::getNota))
                     .forEach(e -> System.out.println(e.getTITULO_EPISODIO() +
-                            " - Nota: " + e.getNota()));
-
-
+                            " - Nota: " +e.getNota()));
         }catch (NumberFormatException e){
             System.out.println("\nErro: Insira um Número");
             System.out.println("\nVocê Escolheu: " + nota);
@@ -211,14 +204,14 @@ public class Principal {
     }
 
     private void listaSerieSalvasDb() {
-        seriesObjeto = repository.findAll();
+        seriesObjeto = serieRepository.findAll();
         seriesObjeto.forEach(System.out::println);
     }
 
     private void buscaSeriePorNomeNoDB() {
         System.out.println("\n Digite o Nome ou Parte Dele Para Buscar Uma Serie no DB");
         String nomeSerie = SCANNER.nextLine();
-        Optional<ModeloSeriePessoal> serie = repository.findByTituloContainingIgnoreCase(nomeSerie);
+        Optional<ModeloSeriePessoal> serie = serieRepository.findByTituloContainingIgnoreCase(nomeSerie);
 
         if (serie.isPresent()) {
             ModeloSeriePessoal serieEncontrada = serie.get();
@@ -234,7 +227,7 @@ public class Principal {
 
         try {
             Long id = Long.parseLong(idSerie);
-            Optional<ModeloSeriePessoal> serie = repository.findById(id);
+            Optional<ModeloSeriePessoal> serie = serieRepository.findById(id);
 
             if (serie.isPresent()) {
                 ModeloSeriePessoal serieEncontrada = serie.get();
@@ -253,7 +246,7 @@ public class Principal {
     }
 
     private void listaAs5Melhores() {
-        List<ModeloSeriePessoal> as5Melhores = repository.findTop5ByOrderByIdDesc();
+        List<ModeloSeriePessoal> as5Melhores = serieRepository.findTop5ByOrderByIdDesc();
         as5Melhores.stream()
                 .forEach(s -> System.out.println(s.getTitulo() +
                         " - Nota: "+ s.getNota()));
@@ -263,7 +256,7 @@ public class Principal {
         System.out.println("\n Digite o Gênero da Serie");
         String generoInserido = SCANNER.nextLine();
         GenerosEnum genero = GenerosEnum.fromBuscaEmPortugues(generoInserido);
-        List<ModeloSeriePessoal> seriePorGenero = repository.findByGenero(genero);
+        List<ModeloSeriePessoal> seriePorGenero = serieRepository.findByGenero(genero);
         seriePorGenero.stream()
                 .forEach(s -> System.out.println(s.getTitulo() +
                         " - Nota: "+ s.getNota() +

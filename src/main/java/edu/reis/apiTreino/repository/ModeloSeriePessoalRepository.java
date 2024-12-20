@@ -1,7 +1,6 @@
 package edu.reis.apiTreino.repository;
 
 import edu.reis.apiTreino.model.GenerosEnum;
-import edu.reis.apiTreino.model.ModeloEpisodioPessoal;
 import edu.reis.apiTreino.model.ModeloSeriePessoal;
 import org.springframework.data.jpa.repository.JpaRepository;
 
