@@ -152,7 +152,7 @@ public class Principal {
             System.out.println("\nEscolha Uma Série Disponível");
             String escolha = SCANNER.nextLine();
 
-            Optional<ModeloSeriePessoal> isSerieEncontrada = seriesObjeto.stream().filter(s -> s.getTitulo().toLowerCase().contains(escolha.toLowerCase())).findFirst();
+            Optional<ModeloSeriePessoal> isSerieEncontrada = seriesObjeto.stream().filter(s -> s.getTitulo().equalsIgnoreCase(escolha)).findFirst();
 
             var ModeloSeriePessoal = isSerieEncontrada.get();
 
@@ -168,6 +168,7 @@ public class Principal {
 
                 ModeloSeriePessoal.setEpisodios(episodiosObjeto);
                 serieRepository.save(ModeloSeriePessoal);
+                episodios.removeAll(episodios);
             } else {
                 System.out.println("\nA Série Escolhida Não Existe no DB");
                 System.out.println("\nVocê Escolheu: " + escolha);
