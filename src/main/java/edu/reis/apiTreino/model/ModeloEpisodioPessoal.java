@@ -12,24 +12,17 @@ public class ModeloEpisodioPessoal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private final String TITULO_EPISODIO;
-    private final String NOME_SERIE;
-    private final String NUMERO_EPISODIO;
-    private final Integer TEMPORADA;
-    private LocalDate DataLancamento;
+    private String TITULO_EPISODIO;
+    private String NOME_SERIE;
+    private String NUMERO_EPISODIO;
+    private Integer TEMPORADA;
+    private LocalDate dataLancamento;
     private float nota;
 
     @ManyToOne
     private ModeloSeriePessoal modeloSeriePessoal;
 
-    public ModeloEpisodioPessoal() {
-        this.TITULO_EPISODIO = null;
-        this.NOME_SERIE = null;
-        this.NUMERO_EPISODIO = null;
-        this.TEMPORADA = null;
-        this.DataLancamento = null;
-        this.nota = 0.0f;
-    }
+    public ModeloEpisodioPessoal() {}
 
 
     public ModeloEpisodioPessoal(String temporada, String nomeSerie, ModeloEpisodio modeloEpisodio) {
@@ -44,7 +37,7 @@ public class ModeloEpisodioPessoal {
             this.nota = 0.0f;
         }
 
-        this.DataLancamento = LocalDate.parse(modeloEpisodio.data());
+        this.dataLancamento = LocalDate.parse(modeloEpisodio.data());
     }
 
     public Long getId() {
@@ -72,7 +65,7 @@ public class ModeloEpisodioPessoal {
     }
 
     public LocalDate getDataLancamento() {
-        return DataLancamento;
+        return dataLancamento;
     }
 
     public float getNota() {

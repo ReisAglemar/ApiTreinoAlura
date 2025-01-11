@@ -16,40 +16,30 @@ public class ModeloSeriePessoal {
     private long id;
 
     @Column(unique = true)
-    private final String titulo;
+    private String titulo;
 
     @Enumerated(EnumType.STRING)
-    private final GenerosEnum genero;
+    private GenerosEnum genero;
 
     @Column(name = "qtd_temporadas")
-    private final Integer temporadas;
+    private Integer temporadas;
 
-    private final Double nota;
+    private Double nota;
 
     @Column(name = "ano_lancamento")
-    private final String ano;
+    private String ano;
 
-    private final String idiomas;
-    private final String pais;
-    private final String tipo;
-    private final String poster;
+    private String idiomas;
+    private String pais;
+    private String tipo;
+    private String poster;
     private String sinopse;
 
     @OneToMany(mappedBy = "modeloSeriePessoal", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ModeloEpisodioPessoal> episodios = new ArrayList<>();
 
 
-    public ModeloSeriePessoal() {
-        this.titulo = null;
-        this.genero = null;
-        this.temporadas = null;
-        this.nota = null;
-        this.ano = null;
-        this.idiomas = null;
-        this.pais = null;
-        this.tipo = null;
-        this.poster = null;
-    }
+    public ModeloSeriePessoal() {}
 
     public ModeloSeriePessoal(BuscaSerie buscaSerie) {
         this.titulo = buscaSerie.titulo();
