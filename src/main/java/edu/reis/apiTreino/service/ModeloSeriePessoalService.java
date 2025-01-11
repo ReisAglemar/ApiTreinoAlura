@@ -27,6 +27,4 @@ public class ModeloSeriePessoalService {
     public List<ModeloSeriePessoalDto> buscarSeriePessoalLancamentos() {
         return converteParaDto.ConverteParaDto(modeloSeriePessoalRepository.findTop5ByOrderByEpisodiosDataLancamentoDesc());
     }
-
-
 }
