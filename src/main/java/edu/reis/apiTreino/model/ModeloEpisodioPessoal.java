@@ -2,6 +2,8 @@ package edu.reis.apiTreino.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "episodio")
 public class ModeloEpisodioPessoal {
@@ -14,7 +16,7 @@ public class ModeloEpisodioPessoal {
     private final String NOME_SERIE;
     private final String NUMERO_EPISODIO;
     private final Integer TEMPORADA;
-    private final String DATA_LANCAMENTO;
+    private LocalDate DataLancamento;
     private float nota;
 
     @ManyToOne
@@ -25,7 +27,7 @@ public class ModeloEpisodioPessoal {
         this.NOME_SERIE = null;
         this.NUMERO_EPISODIO = null;
         this.TEMPORADA = null;
-        this.DATA_LANCAMENTO = null;
+        this.DataLancamento = null;
         this.nota = 0.0f;
     }
 
@@ -42,7 +44,7 @@ public class ModeloEpisodioPessoal {
             this.nota = 0.0f;
         }
 
-        this.DATA_LANCAMENTO = modeloEpisodio.data();
+        this.DataLancamento = LocalDate.parse(modeloEpisodio.data());
     }
 
     public Long getId() {
@@ -69,8 +71,8 @@ public class ModeloEpisodioPessoal {
         return TEMPORADA;
     }
 
-    public String getDATA_LANCAMENTO() {
-        return DATA_LANCAMENTO;
+    public LocalDate getDataLancamento() {
+        return DataLancamento;
     }
 
     public float getNota() {
@@ -102,6 +104,6 @@ public class ModeloEpisodioPessoal {
                 Nota: %.1f
                 Data Lançamento: %s
                 
-                """.formatted(getNOME_SERIE(), getTITULO_EPISODIO(), getNUMERO_EPISODIO(), getTEMPORADA(), getNota(), getDATA_LANCAMENTO());
+                """.formatted(getNOME_SERIE(), getTITULO_EPISODIO(), getNUMERO_EPISODIO(), getTEMPORADA(), getNota(), getDataLancamento());
     }
 }

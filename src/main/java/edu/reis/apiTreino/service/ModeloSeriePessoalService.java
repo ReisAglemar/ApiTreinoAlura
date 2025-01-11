@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ModeloSeriePessoalService {
@@ -14,20 +13,20 @@ public class ModeloSeriePessoalService {
     @Autowired
     private ModeloSeriePessoalRepository modeloSeriePessoalRepository;
 
-    public List<ModeloSeriePessoalDto> buscarSeriePessoal() {
+    @Autowired
+    private ConverteParaDto converteParaDto;
 
-        return modeloSeriePessoalRepository.findAll().stream()
-                .map(s -> new ModeloSeriePessoalDto(s.getId(),
-                        s.getTitulo(),
-                        s.getGenero(),
-                        s.getTemporadas(),
-                        s.getNota(),
-                        s.getAno(),
-                        s.getIdiomas(),
-                        s.getPais(),
-                        s.getTipo(),
-                        s.getPoster(),
-                        s.getSinopse()))
-                .collect(Collectors.toList());
+    public List<ModeloSeriePessoalDto> buscarSeriePessoal() {
+        return converteParaDto.ConverteParaDto(modeloSeriePessoalRepository.findAll());
     }
+
+    public List<ModeloSeriePessoalDto> buscarMelhorSeriePessoal() {
+        return converteParaDto.ConverteParaDto(modeloSeriePessoalRepository.findTop5ByOrderByIdDesc());
+    }
+
+    public List<ModeloSeriePessoalDto> buscarSeriePessoalLancamentos() {
+        return converteParaDto.ConverteParaDto(modeloSeriePessoalRepository.findTop5ByOrderByEpisodiosDataLancamentoDesc());
+    }
+
+
 }

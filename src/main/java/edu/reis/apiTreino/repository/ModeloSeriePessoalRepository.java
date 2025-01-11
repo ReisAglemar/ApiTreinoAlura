@@ -22,4 +22,5 @@ public interface ModeloSeriePessoalRepository extends JpaRepository<ModeloSerieP
     @Query("SELECT e FROM ModeloSeriePessoal s JOIN s.episodios e WHERE e.TITULO_EPISODIO ILIKE %:trecho%")
     List<ModeloEpisodioPessoal> buscaEpisodioPorTrecho(String trecho);
 
+        List<ModeloSeriePessoal> findTop5ByOrderByEpisodiosDataLancamentoDesc();
 }
