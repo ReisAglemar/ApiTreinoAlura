@@ -28,5 +28,20 @@ public class ConverteParaDto {
                         s.getSinopse()))
                 .collect(Collectors.toList());
     }
+
+    // polimorfismo de sobrecarga
+    public ModeloSeriePessoalDto ConverteParaDto(ModeloSeriePessoal modeloSeriePessoal) {
+        return new ModeloSeriePessoalDto(modeloSeriePessoal.getId(),
+                modeloSeriePessoal.getTitulo(),
+                modeloSeriePessoal.getGenero(),
+                modeloSeriePessoal.getTemporadas(),
+                modeloSeriePessoal.getNota(),
+                modeloSeriePessoal.getAno(),
+                modeloSeriePessoal.getIdiomas(),
+                modeloSeriePessoal.getPais(),
+                modeloSeriePessoal.getTipo(),
+                modeloSeriePessoal.getPoster(),
+                modeloSeriePessoal.getSinopse());
+    }
 }
 
