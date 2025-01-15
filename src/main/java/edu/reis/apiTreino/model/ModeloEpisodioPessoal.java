@@ -22,7 +22,8 @@ public class ModeloEpisodioPessoal {
     @ManyToOne
     private ModeloSeriePessoal modeloSeriePessoal;
 
-    public ModeloEpisodioPessoal() {}
+    public ModeloEpisodioPessoal() {
+    }
 
 
     public ModeloEpisodioPessoal(String temporada, String nomeSerie, ModeloEpisodio modeloEpisodio) {

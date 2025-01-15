@@ -1,5 +1,6 @@
 package edu.reis.apiTreino.controller;
 
+import edu.reis.apiTreino.dto.ModeloEpisodioPessoalDto;
 import edu.reis.apiTreino.dto.ModeloSeriePessoalDto;
 import edu.reis.apiTreino.service.ModeloSeriePessoalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +30,22 @@ public class ModeloSeriePessoalController {
 
     @GetMapping("/lancamentos")
     public List<ModeloSeriePessoalDto> obtemModeloSeriePessoalLancamentos() {
-        return service.buscarSeriePessoalLancamentos();
+        return service.buscarLancamentosSeriePessoal();
     }
 
     @GetMapping("/{id}")
     public ModeloSeriePessoalDto obtemModeloSeriePessoalPorId(@PathVariable Long id) {
         return service.buscarSeriePessoalPorId(id);
+    }
+
+    @GetMapping("{id}/temporadas/todas")
+    public List<ModeloEpisodioPessoalDto> obtemModeloEpisodioPessoalTodos(@PathVariable Long id) {
+        return service.bucarEpisodioPessoal(id);
+    }
+
+    @GetMapping("/{id}/temporadas/{numero}")
+    public List<ModeloEpisodioPessoalDto> obtemModeloEpisodioPessoalPorTemporada(@PathVariable Long id, @PathVariable Integer numero) {
+        return service.buscarEpisodiosTemporada(id, numero);
     }
 
 

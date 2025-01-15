@@ -39,7 +39,8 @@ public class ModeloSeriePessoal {
     private List<ModeloEpisodioPessoal> episodios = new ArrayList<>();
 
 
-    public ModeloSeriePessoal() {}
+    public ModeloSeriePessoal() {
+    }
 
     public ModeloSeriePessoal(BuscaSerie buscaSerie) {
         this.titulo = buscaSerie.titulo();

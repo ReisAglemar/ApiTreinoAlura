@@ -23,5 +23,14 @@ public interface ModeloSeriePessoalRepository extends JpaRepository<ModeloSerieP
     List<ModeloEpisodioPessoal> buscaEpisodioPorTrecho(String trecho);
 
     List<ModeloSeriePessoal> findTop5ByOrderByEpisodiosDataLancamentoDesc();
+
+    @Query("SELECT s FROM ModeloSeriePessoal s " +
+            "JOIN s.episodios e " +
+            "GROUP BY s " +
+            "ORDER BY MAX(e.dataLancamento) DESC LIMIT 5")
+    List<ModeloSeriePessoal> lancamentos();
+
+    @Query("SELECT e FROM ModeloSeriePessoal s JOIN s.episodios e WHERE s.id = :id AND e.TEMPORADA = :numero")
+    List<ModeloEpisodioPessoal> buscarEpisodioTemporada(Long id, Integer numero);
 }
 
